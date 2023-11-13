@@ -30,7 +30,7 @@
     <div class="row mt-5">
         <div class="col-lg-3"> </div>
         <div class="col-lg-6">
-            <form id="comment" method="post">
+            <form action="/comment" id="comment" method="post">
                 <input type="hidden" id="csrf" name="<?= csrf_token() ?>" value="<?= csrf_hash() ?>" />
                 <div class="form-group">
                     <label for="email">Email</label>
@@ -83,7 +83,7 @@
             </div>
             <div class="col-lg-3">
                 <p><?= $comment['created_at'] ?></p>
-                <form class="delete-form" action="comment/<?= $comment['id'] ?>" method="post">
+                <form class="delete-form" action="comment/<?= $comment['id'] ?>" method="DELETE">
                     <button type="submit" class="btn btn-danger">Delete</button>
                 </form>
             </div>

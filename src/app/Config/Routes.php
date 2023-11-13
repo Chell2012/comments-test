@@ -34,7 +34,7 @@ $routes->setAutoRoute(true);
 // route since we don't have to scan directories.
 $routes->get('/', 'Comments::index');
 $routes->post('comment', 'Comments::store');
-$routes->post('comment/(:num)', 'Comments::delete/$1');
+$routes->delete('comment/(:num)', 'Comments::delete/$1');
 
 /*
  * --------------------------------------------------------------------

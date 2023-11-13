@@ -10,16 +10,23 @@ class Comments extends BaseController
      * 
      * @return string
      */
-    public function index():string
+    public function index()
     {
         $comment = model('CommentModel');
-        return view('comments/index', [
+        $ansver = [
             'comments'=>$comment->getPage(
                     $this->request->getVar('page'),
                     $this->request->getVar('order')),
             'order'=>$this->request->getVar('order') ?
                 $this->request->getVar('order') :
-            1]);
+            1];
+        if ($this->request->getVar('json') == 1) {
+            return $this->response->setJSON($ansver);
+            
+        } else {
+            return view('comments/index', $ansver);
+        }
+        
     }
         
     public function store() {
@@ -43,10 +50,7 @@ class Comments extends BaseController
             $comment = $comment->getPage(
                     $this->request->getVar('page'),
                     $this->request->getVar('order'));
-            $ansver = [
-                'comments' => $comment,
-                'pages' => $comment['pager']->getLastPage(),
-            ];
+            $ansver = [ 'success'=> 1];
         }
         $ansver['csrf_token'] = csrf_hash();
         return $this->response->setJSON($ansver);

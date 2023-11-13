@@ -26,9 +26,9 @@ $(document).ready(function(){
             text: 'Delete'
         });
         var form = $('<form>',{
-            class: 'delete-form',
-            action: 'comment/'+comment.id,
-            method: 'post'
+            class: "delete-form",
+            action: "comment/"+comment.id,
+            method: 'DELETE'
         }).append(button);
         var leftBlock = $('<div>', {
             'class': 'col-lg-9'
@@ -76,13 +76,9 @@ $(document).ready(function(){
     $('#comment').submit(function( event ){
         event.preventDefault();
 
-        var page = GetParameterValues("page");
-        var order = GetParameterValues("order");
         var csrfName = $('#csrf').attr('name');
         var csrfHash = $('#csrf').val();
         var formData = {
-            page: page,
-            order: order,
             text: $("#text").val(),
             email: $("#email").val(),
             [csrfName]: csrfHash
@@ -96,9 +92,9 @@ $(document).ready(function(){
         success: function(response){
                 $('#csrf').val(response.csrf_token);
                     console.log(response.csrf_token);
-                if (typeof response.comments  !== "undefined"){
+                if (response.success == 1){
                     $('#text,#email').val('');
-                    buildCommentsList(response.comments.comments);
+                    updateCommentsList();
                     addErrorsToField(response.errors);
                 }else {
                     addErrorsToField(response.errors);
@@ -106,31 +102,44 @@ $(document).ready(function(){
             }
         });
     });
-    $('.delete-form').submit(function( event ){
+    $(document).on('submit', '.delete-form', function(event){
         event.preventDefault();
-        var page = GetParameterValues("page");
-        var order = GetParameterValues("order");
+        
         var csrfName = $('#csrf').attr('name');
         var csrfHash = $('#csrf').val();
         var action = $(this).attr("action");
-        var formData = {
-            page: page,
-            order: order,
-            [csrfName]: csrfHash
-        };
+        
         $.ajax({
             url: action,
-            method: 'post',
-            data: formData,
+            method: "DELETE",
             dataType: 'json',
             success: function(response) {
                 $('#csrf').val(response.csrf_token);
+                updateCommentsList();
+            }
+        });
+    });
+    
+    function updateCommentsList(){
+        var page = GetParameterValues("page");
+        var order = GetParameterValues("order");
+        var formData = {
+            page: page,
+            order: order,
+            json: 1,
+        };
+        $.ajax({
+            url:'/',
+            method: 'get',
+            data: formData,
+            success: function(response) {
                 if (typeof response.comments  !== "undefined"){
                     buildCommentsList(response.comments.comments);
                 } 
             }
         });
-    });
+    }
+    
     function GetParameterValues(param) {
         var url = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
         for (var i = 0; i < url.length; i++) {
